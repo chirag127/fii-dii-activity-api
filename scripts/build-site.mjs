@@ -126,4 +126,6 @@ ${rows}
 
 writeFileSync(join(dist, 'index.html'), html);
 writeFileSync(join(dist, '404.html'), html);
+writeFileSync(join(dist, 'CNAME'), 'fii-dii-activity-api.oriz.in
+');
 console.log(`Built dist/ (live client-side chart + ${readdirSync(distData).length} data files + openapi.yaml)`);
