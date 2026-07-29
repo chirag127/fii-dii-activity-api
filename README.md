@@ -1,5 +1,9 @@
 # FII/DII Activity API
 
+[![Live](https://img.shields.io/badge/live-fii--dii--activity--api.oriz.in-2ea44f)](https://fii-dii-activity-api.oriz.in) [![Stars](https://img.shields.io/github/stars/chirag127/fii-dii-activity-api?style=flat)](https://github.com/chirag127/fii-dii-activity-api/stargazers) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+Live: **https://fii-dii-activity-api.oriz.in**
+
 Daily **FII** (Foreign Institutional Investors) and **DII** (Domestic Institutional Investors) net buy/sell activity for Indian equity markets — scraped by GitHub Actions, served as static JSON via GitHub Pages and `raw.githubusercontent.com`. Zero servers, zero ongoing cost.
 
 ![FII/DII Activity API — live site](docs/screenshot.png)
