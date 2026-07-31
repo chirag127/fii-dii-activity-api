@@ -30,11 +30,20 @@ test('no file contains the legacy brand string', () => {
   // The guard script's own filename legitimately contains the fragment; strip
   // references to it (e.g. in README docs) before scanning.
   const filenameToken = new RegExp('no-' + needle + '\\.test\\.mjs', 'gi');
+  // The sanctioned GitHub-Pages custom domain (<repo>.oriz.in) legitimately
+  // contains the fragment; strip it before scanning. Bare repo NAMES stay
+  // brand-free; only the .oriz.in DOMAIN is allowed.
+  const domainToken = new RegExp(
+    '[a-z0-9-]+\\.' + needle + '\\.in',
+    'gi',
+  );
   const offenders = [];
   for (const file of walk(root)) {
     const rel = relative(root, file).replace(/\\/g, '/');
     if (SELF.has(rel)) continue;
-    const text = readFileSync(file, 'utf8').replace(filenameToken, '');
+    const text = readFileSync(file, 'utf8')
+      .replace(filenameToken, '')
+      .replace(domainToken, '');
     if (re.test(text)) offenders.push(rel);
   }
   assert.deepEqual(offenders, [], `legacy brand found in: ${offenders.join(', ')}`);
