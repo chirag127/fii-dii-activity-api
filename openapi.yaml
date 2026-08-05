@@ -1,12 +1,12 @@
 openapi: 3.1.0
 info:
   title: FII/DII Activity API
-  version: 0.2.0
+  version: 0.3.0
   description: >-
     Daily FII (Foreign Institutional Investors) and DII (Domestic Institutional
-    Investors) net buy/sell activity for Indian equity markets. Scraped from NSE
-    (primary) and Moneycontrol (fallback) by GitHub Actions and served as static
-    JSON. All monetary values are in INR crores. No authentication required.
+    Investors) net buy/sell activity for Indian equity markets. Scraped from NSE,
+    Groww, and Moneycontrol by GitHub Actions and served as static JSON. All
+    monetary values are in INR crores. No authentication required.
 
 
     The canonical host is GitHub Pages; the other servers are equivalent mirrors
@@ -102,10 +102,11 @@ components:
           description: Trading date (ISO `YYYY-MM-DD`).
         source:
           type: string
-          enum: [nse, moneycontrol, placeholder]
+          enum: [nse, groww, moneycontrol, placeholder]
           description: >-
-            Data origin. `nse` = NSE official API (primary), `moneycontrol` =
-            fallback scrape, `placeholder` = both upstreams failed (all zeros).
+            Data origin. `nse` = NSE official API, `groww` = Groww server-rendered
+            cash data (primary working source), `moneycontrol` = fallback scrape,
+            `placeholder` = all upstreams failed (all zeros).
         equity:
           $ref: "#/components/schemas/Block"
         derivative:

@@ -1,20 +1,20 @@
 {
   "date": "2026-08-04",
-  "source": "placeholder",
+  "source": "groww",
   "equity": {
-    "fii_buy": 0,
-    "fii_sell": 0,
-    "fii_net": 0,
-    "dii_buy": 0,
-    "dii_sell": 0,
-    "dii_net": 0
+    "fii_buy": 15630.45,
+    "fii_sell": 13183.98,
+    "fii_net": 2446.47,
+    "dii_buy": 15241.39,
+    "dii_sell": 16177.53,
+    "dii_net": -936.14
   },
   "derivative": {
-    "fii_buy": 0,
-    "fii_sell": 0,
-    "fii_net": 0,
-    "dii_buy": 0,
-    "dii_sell": 0,
-    "dii_net": 0
+    "fii_buy": 0.0,
+    "fii_sell": 0.0,
+    "fii_net": 0.0,
+    "dii_buy": 0.0,
+    "dii_sell": 0.0,
+    "dii_net": 0.0
   }
 }

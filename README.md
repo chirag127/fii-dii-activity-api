@@ -8,7 +8,7 @@ Daily **FII** (Foreign Institutional Investors) and **DII** (Domestic Institutio
 
 ![FII/DII Activity API — live site](docs/screenshot.png)
 
-<sub>Live site screenshot, auto-captured from the deployed page by `scripts/screenshot.mjs`.</sub>
+<sub>Live site screenshot, auto-captured from the deployed page by `python -m fii_dii.screenshot`.</sub>
 
 ## Contents
 
@@ -25,13 +25,13 @@ Daily **FII** (Foreign Institutional Investors) and **DII** (Domestic Institutio
 ```mermaid
 xychart-beta
     title "FII net (line 1) vs DII net (line 2) — INR crore"
-    x-axis ["07-08", "07-09", "07-10", "07-13", "07-14", "07-15", "07-16", "07-17", "07-20", "07-21", "07-22", "07-23", "07-24", "07-27", "07-28", "07-29", "07-30", "07-31", "08-03", "08-04"]
+    x-axis ["07-07", "07-08", "07-09", "07-10", "07-13", "07-14", "07-15", "07-16", "07-17", "07-20", "07-21", "07-22", "07-23", "07-24", "07-27", "07-28", "07-29", "07-30", "07-31", "08-04"]
     y-axis "Net (INR cr)" -4206 --> 2987
-    line [1962.8, -532.86, 2603.72, -3062.27, -739.69, -735.83, -4205.56, -376.41, -1121.04, 1650.16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    line [790.16, 2057.79, 2019.68, 2171.7, 2927.71, 704.93, 2986.41, 1017.89, 1312.03, -656.88, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    line [393.19, 1962.8, -532.86, 2603.72, -3062.27, -739.69, -735.83, -4205.56, -376.41, -1121.04, 1650.16, 0, 0, 0, 0, 0, 0, 0, 0, 2446.47]
+    line [-383.43, 790.16, 2057.79, 2019.68, 2171.7, 2927.71, 704.93, 2986.41, 1017.89, 1312.03, -656.88, 0, 0, 0, 0, 0, 0, 0, 0, -936.14]
 ```
 
-<sub>FII = first line, DII = second line. Auto-generated from `data/` by `scripts/chart.mjs` on each scrape. Last 20 session(s).</sub>
+<sub>FII = first line, DII = second line. Auto-generated from `data/` by `python -m fii_dii.chart` on each scrape. Last 20 session(s).</sub>
 <!-- CHART:END -->
 
 ## Endpoints (static JSON)
@@ -54,20 +54,20 @@ Machine-readable contract: [`openapi.yaml`](./openapi.yaml) (import into RapidAP
 ```json
 {
   "date": "2026-06-22",
-  "source": "nse",
+  "source": "groww",
   "equity":     { "fii_buy": 0, "fii_sell": 0, "fii_net": 0, "dii_buy": 0, "dii_sell": 0, "dii_net": 0 },
   "derivative": { "fii_buy": 0, "fii_sell": 0, "fii_net": 0, "dii_buy": 0, "dii_sell": 0, "dii_net": 0 }
 }
 ```
 
-`source` is one of `nse` (primary), `moneycontrol` (fallback), or `placeholder` (both failed). All values are INR crores. `equity` is the Capital Market (cash) segment; `derivative` is reserved for F&O and is currently always zero because the NSE `fiidii` endpoint reports cash only.
+`source` is one of `nse`, `groww` (primary working source), `moneycontrol` (fallback), or `placeholder` (all failed). All values are INR crores. `equity` is the Capital Market (cash) segment; `derivative` is reserved for F&O and is currently always zero (the upstreams report cash only).
 
 ## How it works
 
 ```
                     ┌─────────────────────────────────────────────┐
   GitHub Actions    │  scrape.yml (cron, weekdays 13:00 UTC)       │
-  (no servers)      │     └─> node scripts/scrape.mjs              │
+  (no servers)      │     └─> python -m fii_dii scrape              │
                     │            NSE  ──try──> parseNse            │
                     │             │ fail                           │
                     │            Moneycontrol ──try──> parseMC     │
@@ -75,12 +75,12 @@ Machine-readable contract: [`openapi.yaml`](./openapi.yaml) (import into RapidAP
                     │            placeholder (all-zero)            │
                     │            └─> writes data/<date>.json       │
                     │                       data/latest.json       │
-                    │     └─> node scripts/chart.mjs (README chart)│
+                    │     └─> python scripts/chart.py (README chart)│
                     │     └─> git commit + push                    │
                     └───────────────────┬─────────────────────────┘
                                         │ push to main
                     ┌───────────────────▼─────────────────────────┐
-                    │  deploy.yml → scripts/build-site.mjs → dist/ │
+                    │  deploy.yml → src/fii_dii/build_site.py → dist/ │
                     │     → GitHub Pages (canonical)               │
                     └─────────────────────────────────────────────┘
   Mirrors (same committed data): raw.githubusercontent · jsDelivr · Statically
@@ -92,13 +92,13 @@ A scrape is accepted **only if it validates and carries complete FII _and_ DII e
 
 | Path | Purpose |
 | --- | --- |
-| `scripts/scrape.mjs` | Entry point — fetches NSE → Moneycontrol → placeholder, validates, writes `data/`. |
-| `scripts/lib/schema.mjs` | Pure, tested core: `parseNse`, `parseMoneycontrolRow`, `toNumber`, `buildPayload`, `validatePayload`, `hasCompleteEquity`. |
-| `scripts/chart.mjs` | Regenerates the Mermaid chart between the `<!-- CHART -->` markers in this README. |
-| `scripts/build-site.mjs` | Builds the dependency-free static site (`dist/`) for GitHub Pages: `index.html` + inline SVG chart + `data/` + `openapi.yaml`. |
-| `scripts/screenshot.mjs` | Captures `docs/screenshot.png` from the live (or local) site via Playwright. |
-| `scripts/backfill.mjs` | One-off historical backfill of `data/` (cross-verified provisional figures). |
-| `scripts/*.test.mjs` | Test suite (see [Testing](#testing)). |
+| `src/fii_dii/scrape.py` | Entry point — fetches NSE → Moneycontrol → placeholder, validates, writes `data/`. |
+| `scripts/lib/schema.py` | Pure, tested core: `parseNse`, `parseMoneycontrolRow`, `toNumber`, `buildPayload`, `validatePayload`, `hasCompleteEquity`. |
+| `scripts/chart.py` | Regenerates the Mermaid chart between the `<!-- CHART -->` markers in this README. |
+| `src/fii_dii/build_site.py` | Builds the dependency-free static site (`dist/`) for GitHub Pages: `index.html` + inline SVG chart + `data/` + `openapi.yaml`. |
+| `scripts/screenshot.py` | Captures `docs/screenshot.png` from the live (or local) site via Playwright. |
+| `scripts/backfill.py` | One-off historical backfill of `data/` (cross-verified provisional figures). |
+| `scripts/*.test.py` | Test suite (see [Testing](#testing)). |
 | `data/*.json` | The API payloads — one file per trading day plus `latest.json`. |
 | `openapi.yaml` | OpenAPI 3.1 contract (import into RapidAPI/Postman/Swagger). |
 | `.github/workflows/` | `scrape.yml` (cron), `ci.yml` (tests), `deploy.yml` (Pages), `megalinter.yml`. |
@@ -110,19 +110,19 @@ npm run scrape        # fetch today's data → data/<today>.json + data/latest.j
 npm run chart         # regenerate the README chart from data/
 npm test              # full offline test suite (deterministic)
 npm run test:live     # live-endpoint integration tests (hits the deployed URLs)
-node scripts/build-site.mjs   # build dist/ (what Pages serves)
-node scripts/screenshot.mjs   # refresh docs/screenshot.png from the live site
+python -m fii_dii build   # build dist/ (what Pages serves)
+python scripts/screenshot.py   # refresh docs/screenshot.png from the live site
 ```
 
 **Dependencies:** runtime `cheerio` (HTML parsing) only; tests use the built-in `node:test` runner — zero dev dependencies.
 
 ## Data pipeline
 
-1. **Fetch** — `scrape.mjs` calls NSE's `fiidii` JSON API first. On any failure (NSE blocks non-browser IPs) it falls back to scraping the Moneycontrol activity table.
+1. **Fetch** — `scrape.py` calls NSE's `fiidii` JSON API first. On any failure (NSE blocks non-browser IPs) it falls back to scraping the Moneycontrol activity table.
 2. **Parse** — `parseNse` matches the `FII/FPI *` and `DII **` category rows; `parseMoneycontrolRow` reads the cash table, skipping the leading date column. `toNumber` normalizes `1,234.50`, `₹`, and accounting `(913.59)` → `-913.59`.
 3. **Validate** — `validatePayload` checks all six fields are finite and that `buy − sell ≈ net` (±1 cr rounding). `hasCompleteEquity` requires both FII and DII sides populated.
 4. **Write** — the accepted payload is written to `data/<date>.json` and `data/latest.json`.
-5. **Publish** — `chart.mjs` refreshes the README chart; the commit is pushed; `deploy.yml` rebuilds the static site to Pages.
+5. **Publish** — `chart.py` refreshes the README chart; the commit is pushed; `deploy.yml` rebuilds the static site to Pages.
 
 ## Testing
 
@@ -130,28 +130,28 @@ Run `npm test`. The suite (built-in `node:test`, no framework) covers:
 
 | File | What it checks |
 | --- | --- |
-| `scripts/lib/schema.test.mjs` | `toNumber` edge cases, `parseNse`/`parseMoneycontrolRow`, validation, `hasCompleteEquity`. |
-| `scripts/data.test.mjs` | Every committed `data/*.json` is schema-valid; reports non-zero coverage. |
-| `scripts/chart.test.mjs` | The README chart block is present and line-ending agnostic. |
-| `scripts/openapi.test.mjs` | `openapi.yaml` is 3.1, documents both endpoints, lists all servers, example is schema-valid. |
-| `scripts/no-oriz.test.mjs` | Brand guard — the project is strictly "FII/DII Activity API". |
-| `scripts/live.test.mjs` | (`LIVE=1`) every published mirror returns 200 + valid JSON; upstreams reachable. |
+| `scripts/lib/schema.test.py` | `toNumber` edge cases, `parseNse`/`parseMoneycontrolRow`, validation, `hasCompleteEquity`. |
+| `scripts/data.test.py` | Every committed `data/*.json` is schema-valid; reports non-zero coverage. |
+| `scripts/test_chart.py` | The README chart block is present and line-ending agnostic. |
+| `scripts/openapi.test.py` | `openapi.yaml` is 3.1, documents both endpoints, lists all servers, example is schema-valid. |
+| `tests/test_no_brand.py` | Brand guard — the project is strictly "FII/DII Activity API". |
+| `scripts/live.test.py` | (`LIVE=1`) every published mirror returns 200 + valid JSON; upstreams reachable. |
 
 CI (`ci.yml`) runs the offline suite, asserts the chart is not stale, and confirms the static site builds — on every push and PR.
 
 ## Deploy
 
-GitHub Pages, built by `deploy.yml` on every push that touches `data/`, `README.md`, `openapi.yaml`, or the build script. There is **no external template and no custom domain** — `scripts/build-site.mjs` emits a self-contained `dist/` (landing page with an inline SVG chart, all data files, the OpenAPI spec). Pages serves it at the canonical `github.io` URL; jsDelivr/Statically/raw mirror the same committed files.
+GitHub Pages, built by `deploy.yml` on every push that touches `data/`, `README.md`, `openapi.yaml`, or the build script. There is **no external template and no custom domain** — `src/fii_dii/build_site.py` emits a self-contained `dist/` (landing page with an inline SVG chart, all data files, the OpenAPI spec). Pages serves it at the canonical `github.io` URL; jsDelivr/Statically/raw mirror the same committed files.
 
 ## Local development
 
 ```bash
 npm install
-node scripts/scrape.mjs          # try a real scrape (NSE may 404 from non-browser IPs — expected)
+python -m fii_dii scrape          # try a real scrape (NSE may 404 from non-browser IPs — expected)
 npm test                         # verify everything offline
-node scripts/build-site.mjs      # build the site locally into dist/
+python -m fii_dii build      # build the site locally into dist/
 npx serve dist                   # preview at http://localhost:3000
-SITE=http://localhost:3000 node scripts/screenshot.mjs   # screenshot the local build
+SITE=http://localhost:3000 python scripts/screenshot.py   # screenshot the local build
 ```
 
 ## Schedule

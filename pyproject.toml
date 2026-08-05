@@ -1,0 +1,30 @@
+[project]
+name = "fii-dii-activity-api"
+version = "0.3.0"
+description = "Daily FII/DII net activity for Indian markets — scraped by GitHub Actions, served via GitHub Pages + raw.githubusercontent.com."
+requires-python = ">=3.11"
+dependencies = [
+    "httpx>=0.28",
+    "selectolax>=0.3.25",
+]
+
+[project.optional-dependencies]
+browser = ["playwright>=1.50"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+fii-dii-scrape = "fii_dii.__main__:main"
+fii-dii-chart = "fii_dii.chart:main"
+fii-dii-manifest = "fii_dii.manifest:main"
+fii-dii-build = "fii_dii.build_site:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

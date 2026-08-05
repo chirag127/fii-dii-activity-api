@@ -11,3 +11,6 @@ dist/
 .env.*.local
 .sops-age-key.txt
 .ignore
+
+*.egg-info/
+__pycache__/
