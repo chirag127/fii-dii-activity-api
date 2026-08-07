@@ -1,7 +1,6 @@
 name: deploy
 
-# Plain static GitHub Pages deploy — no external template.
-# Builds dist/ from data/ + openapi.yaml + a generated index.html.
+# Static GitHub Pages deploy — builds dist/ from data/ + openapi.yaml.
 
 on:
   push:
@@ -10,7 +9,7 @@ on:
       - "README.md"
       - "data/**"
       - "openapi.yaml"
-      - "scripts/build-site.mjs"
+      - "src/fii_dii/build_site.py"
       - ".github/workflows/deploy.yml"
   workflow_dispatch:
 
@@ -28,11 +27,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-python@v5
         with:
-          node-version: "22"
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -e ".[dev]"
       - name: Build static site
-        run: node scripts/build-site.mjs
+        run: fii-dii-build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
