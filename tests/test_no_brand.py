@@ -11,7 +11,8 @@ _SKIP_DIRS = {"node_modules", ".git", "dist", ".wrangler", "__pycache__", ".pyte
 _CHECK_EXT = re.compile(r"\.(md|py|mjs|js|json|yaml|yml|svg|css|html|txt|toml)$", re.I)
 
 # These files must reference the banned word to test for it — skip them.
-_SELF = {"tests/test_no_brand.py", "tests/test_openapi.py"}
+# AGENTS.md / CLAUDE.md are fleet meta-docs; they legitimately reference other sites.
+_SELF = {"tests/test_no_brand.py", "tests/test_openapi.py", "AGENTS.md", "CLAUDE.md"}
 
 
 def _walk(root: Path):
