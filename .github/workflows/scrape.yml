@@ -13,19 +13,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-python@v5
         with:
-          node-version: 22
-      - uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('**/package.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
-      - run: npm install --no-audit --no-fund
-      - run: node scripts/scrape.mjs
-      - run: node scripts/manifest.mjs
-      - run: node scripts/chart.mjs
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - run: fii-dii-scrape
+      - run: fii-dii-manifest
+      - run: fii-dii-chart
       - name: Commit + push
         run: |
           git config user.name "github-actions[bot]"
