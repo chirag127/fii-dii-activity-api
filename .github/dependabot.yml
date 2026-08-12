@@ -12,6 +12,8 @@ updates:
       dev-dependencies:
         dependency-type: "development"
         update-types: ["minor", "patch", "major"]
+    ignore:
+      - dependency-name: "@chirag127/*"   # workspace/path deps Dependabot can't resolve
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
