@@ -1,21 +1,49 @@
 # FII/DII Activity API
 
-[![Live](https://img.shields.io/badge/live-fii--dii--activity--api.oriz.in-2ea44f)](https://fii-dii-activity-api.oriz.in) [![Stars](https://img.shields.io/github/stars/chirag127/fii-dii-activity-api?style=flat)](https://github.com/chirag127/fii-dii-activity-api/stargazers) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+**Daily FII/DII net buy/sell activity for Indian markets — scraped by GitHub Actions, served as static JSON. Zero servers, zero ongoing cost.**
 
-Live: **https://fii-dii-activity-api.oriz.in**
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/chirag127/fii-dii-activity-api?style=flat)](https://github.com/chirag127/fii-dii-activity-api/stargazers)
+[![Last commit](https://img.shields.io/github/last-commit/chirag127/fii-dii-activity-api)](https://github.com/chirag127/fii-dii-activity-api/commits)
+[![Python](https://img.shields.io/badge/python-3.11%2B-3776ab)](https://www.python.org/)
+[![CI](https://github.com/chirag127/fii-dii-activity-api/actions/workflows/ci.yml/badge.svg)](https://github.com/chirag127/fii-dii-activity-api/actions/workflows/ci.yml)
 
-Daily **FII** (Foreign Institutional Investors) and **DII** (Domestic Institutional Investors) net buy/sell activity for Indian equity markets — scraped by GitHub Actions, served as static JSON via GitHub Pages and `raw.githubusercontent.com`. Zero servers, zero ongoing cost.
+Daily **FII** (Foreign Institutional Investors) and **DII** (Domestic Institutional
+Investors) net buy/sell activity for Indian equity markets — scraped by GitHub Actions
+and served as static JSON via GitHub Pages and `raw.githubusercontent.com`. A Python
+job runs after NSE close, validates the parse, commits it to the repo (git-as-DB), and
+GitHub Pages publishes a self-contained site + the raw JSON API.
+
+- **Live site:** https://fii-dii-activity-api.oriz.in
+- **GH Pages (canonical API/landing):** https://chirag127.github.io/fii-dii-activity-api/
+- **Repo:** https://github.com/chirag127/fii-dii-activity-api
+
+⭐ If this is useful, please **star the repo** — it helps others find it.
 
 ![FII/DII Activity API — live site](docs/screenshot.png)
 
-<sub>Live site screenshot, auto-captured from the deployed page by `python -m fii_dii.screenshot`.</sub>
+<sub>Live site screenshot, auto-captured from the deployed page by `fii-dii` screenshot tooling.</sub>
 
 ## Contents
 
-- [Chart](#chart) · [Endpoints](#endpoints-static-json) · [Response shape](#response-shape-latestjson)
-- [How it works](#how-it-works) · [Project layout](#project-layout) · [Scripts](#scripts)
-- [Data pipeline](#data-pipeline) · [Testing](#testing) · [Deploy](#deploy)
-- [Local development](#local-development) · [Schedule](#schedule) · [License](#license)
+- [Data flow](#data-flow) · [Chart](#chart) · [Endpoints](#endpoints-static-json) · [Response shape](#response-shape-latestjson)
+- [How it works](#how-it-works) · [Project layout](#project-layout) · [CLI reference](#cli-reference)
+- [Quick start](#quick-start) · [Configuration](#configuration) · [Testing](#testing) · [Schedule](#schedule)
+
+## Data flow
+
+```mermaid
+flowchart LR
+  subgraph cron["GitHub Actions (weekdays 13:00 UTC)"]
+    F["Scrape<br/>NSE → Groww → Moneycontrol → placeholder"] --> V["Validate<br/>6 finite fields · buy−sell≈net · complete FII+DII"]
+    V --> W["Write data/&lt;date&gt;.json<br/>+ data/latest.json"]
+    W --> C["Regenerate README chart"]
+    C --> G["git commit + rebase + push (git-as-DB)"]
+  end
+  G -->|push to main| B["deploy.yml → build_site.py → dist/"]
+  B --> P["GitHub Pages (canonical API)"]
+  G -.mirrors.-> M["raw.githubusercontent · jsDelivr · Statically"]
+```
 
 ## Chart
 
@@ -31,12 +59,13 @@ xychart-beta
     line [704.93, 2986.41, 1017.89, 1312.03, -656.88, 0, 0, 0, 0, 0, 0, 0, 0, 0, -936.14, 4013.6, 235.56, -1290.29, 24.77, 5841.66]
 ```
 
-<sub>FII = first line, DII = second line. Auto-generated from `data/` by `python -m fii_dii.chart` on each scrape. Last 20 session(s).</sub>
+<sub>FII = first line, DII = second line. Auto-generated from `data/` by `fii-dii-chart` on each scrape. Last 20 session(s).</sub>
 <!-- CHART:END -->
 
 ## Endpoints (static JSON)
 
-The **canonical** base URL is GitHub Pages — it never expires and has no external DNS dependency. The raw and CDN URLs are equivalent mirrors of the same committed data.
+The **canonical** base URL is GitHub Pages — it never expires and has no external DNS
+dependency. The raw and CDN URLs are equivalent mirrors of the same committed data.
 
 | URL | Description |
 | --- | --- |
@@ -47,117 +76,130 @@ The **canonical** base URL is GitHub Pages — it never expires and has no exter
 | `https://cdn.jsdelivr.net/gh/chirag127/fii-dii-activity-api@main/data/latest.json` | Mirror via jsDelivr CDN (cached, fast) |
 | `https://cdn.statically.io/gh/chirag127/fii-dii-activity-api/main/data/latest.json` | Mirror via Statically CDN |
 
-Machine-readable contract: [`openapi.yaml`](./openapi.yaml) (import into RapidAPI, Postman, Swagger UI, etc.).
+Machine-readable contract: [`openapi.yaml`](./openapi.yaml) — OpenAPI 3.1, two GET
+endpoints, four equivalent servers (import into RapidAPI, Postman, Swagger UI, etc.):
+
+| Method + path | operationId | Purpose |
+| --- | --- | --- |
+| `GET /latest.json` | `getLatest` | Most recent daily FII/DII payload |
+| `GET /{date}.json` | `getByDate` | Payload for a specific `YYYY-MM-DD` trading day (404 if none) |
 
 ## Response shape (`latest.json`)
 
 ```json
 {
-  "date": "2026-06-22",
-  "source": "groww",
-  "equity":     { "fii_buy": 0, "fii_sell": 0, "fii_net": 0, "dii_buy": 0, "dii_sell": 0, "dii_net": 0 },
+  "date": "2026-07-21",
+  "source": "nse",
+  "equity":     { "fii_buy": 5917.71, "fii_sell": 5004.12, "fii_net": 913.59, "dii_buy": 6440.88, "dii_sell": 5165.66, "dii_net": 1275.22 },
   "derivative": { "fii_buy": 0, "fii_sell": 0, "fii_net": 0, "dii_buy": 0, "dii_sell": 0, "dii_net": 0 }
 }
 ```
 
-`source` is one of `nse`, `groww` (primary working source), `moneycontrol` (fallback), or `placeholder` (all failed). All values are INR crores. `equity` is the Capital Market (cash) segment; `derivative` is reserved for F&O and is currently always zero (the upstreams report cash only).
+`source` is one of `nse`, `groww` (primary working source), `moneycontrol` (fallback),
+or `placeholder` (all failed → all zeros). All values are INR crores. `equity` is the
+Capital Market (cash) segment; `derivative` is reserved for F&O and is currently always
+zero (the upstreams report cash only).
 
 ## How it works
 
-```
-                    ┌─────────────────────────────────────────────┐
-  GitHub Actions    │  scrape.yml (cron, weekdays 13:00 UTC)       │
-  (no servers)      │     └─> python -m fii_dii scrape              │
-                    │            NSE  ──try──> parseNse            │
-                    │             │ fail                           │
-                    │            Moneycontrol ──try──> parseMC     │
-                    │             │ fail                           │
-                    │            placeholder (all-zero)            │
-                    │            └─> writes data/<date>.json       │
-                    │                       data/latest.json       │
-                    │     └─> python scripts/chart.py (README chart)│
-                    │     └─> git commit + push                    │
-                    └───────────────────┬─────────────────────────┘
-                                        │ push to main
-                    ┌───────────────────▼─────────────────────────┐
-                    │  deploy.yml → src/fii_dii/build_site.py → dist/ │
-                    │     → GitHub Pages (canonical)               │
-                    └─────────────────────────────────────────────┘
-  Mirrors (same committed data): raw.githubusercontent · jsDelivr · Statically
-```
-
-A scrape is accepted **only if it validates and carries complete FII _and_ DII equity data** — a partial or all-zero parse is rejected and falls through to the next source, so a bad upstream can never overwrite good data with zeros.
+1. **Fetch** — `scrape.py` tries NSE's `fiidii` JSON API, then Groww's server-rendered
+   cash data (primary working source), then Moneycontrol; if all fail it writes an
+   all-zero `placeholder`.
+2. **Parse** — `selectolax` reads the server-rendered tables; `toNumber`-style
+   normalization handles `1,234.50`, `₹`, and accounting `(913.59)` → `-913.59`.
+3. **Validate** — a scrape is accepted **only if it validates and carries complete FII
+   _and_ DII equity data** (all six fields finite, `buy − sell ≈ net` within ±1 cr) — a
+   partial or all-zero parse is rejected and falls through to the next source, so a bad
+   upstream can never overwrite good data with zeros.
+4. **Write** — the accepted payload is written to `data/<date>.json` + `data/latest.json`
+   (git-as-DB: committed back with a rebase-before-push guard).
+5. **Publish** — the chart is regenerated, the commit is pushed, and `deploy.yml`
+   rebuilds the self-contained static site to GitHub Pages; mirrors follow automatically.
 
 ## Project layout
 
 | Path | Purpose |
 | --- | --- |
-| `src/fii_dii/scrape.py` | Entry point — fetches NSE → Moneycontrol → placeholder, validates, writes `data/`. |
-| `scripts/lib/schema.py` | Pure, tested core: `parseNse`, `parseMoneycontrolRow`, `toNumber`, `buildPayload`, `validatePayload`, `hasCompleteEquity`. |
-| `scripts/chart.py` | Regenerates the Mermaid chart between the `<!-- CHART -->` markers in this README. |
-| `src/fii_dii/build_site.py` | Builds the dependency-free static site (`dist/`) for GitHub Pages: `index.html` + inline SVG chart + `data/` + `openapi.yaml`. |
-| `scripts/screenshot.py` | Captures `docs/screenshot.png` from the live (or local) site via Playwright. |
-| `scripts/backfill.py` | One-off historical backfill of `data/` (cross-verified provisional figures). |
-| `scripts/*.test.py` | Test suite (see [Testing](#testing)). |
+| `src/fii_dii/__main__.py` | Scrape entry point (CLI `fii-dii-scrape`) — NSE → Groww → Moneycontrol → placeholder, validates, writes `data/`. |
+| `src/fii_dii/scrape.py` | Per-source fetchers: `try_nse`, `try_groww`, `try_moneycontrol`. |
+| `src/fii_dii/schema.py` | Pure, tested core: `build_payload`, `validate_payload`, `has_complete_equity`. |
+| `src/fii_dii/chart.py` | Regenerates the Mermaid chart between the `<!-- CHART -->` markers (CLI `fii-dii-chart`). |
+| `src/fii_dii/build_site.py` | Builds the dependency-free static site (`dist/`) for Pages: `index.html` + inline SVG chart + `data/` + `openapi.yaml` (CLI `fii-dii-build`). |
+| `src/fii_dii/manifest.py` | Builds a data manifest (CLI `fii-dii-manifest`). |
+| `src/fii_dii/screenshot.py` | Captures `docs/screenshot.png` from the live/local site via Playwright. |
+| `src/fii_dii/backfill.py` | One-off historical backfill of `data/`. |
 | `data/*.json` | The API payloads — one file per trading day plus `latest.json`. |
-| `openapi.yaml` | OpenAPI 3.1 contract (import into RapidAPI/Postman/Swagger). |
+| `openapi.yaml` | OpenAPI 3.1 contract. |
 | `.github/workflows/` | `scrape.yml` (cron), `ci.yml` (tests), `deploy.yml` (Pages), `megalinter.yml`. |
 
-## Scripts
+## CLI reference
+
+Installed as console scripts (see `pyproject.toml`):
+
+| Command | Purpose |
+| --- | --- |
+| `fii-dii-scrape` | Fetch today's data → `data/<today>.json` + `data/latest.json` |
+| `fii-dii-chart` | Regenerate the README Mermaid chart from `data/` |
+| `fii-dii-manifest` | Build the data manifest |
+| `fii-dii-build` | Build the static site (`dist/`) — what GitHub Pages serves |
+
+## Quick start
 
 ```bash
-npm run scrape        # fetch today's data → data/<today>.json + data/latest.json
-npm run chart         # regenerate the README chart from data/
-npm test              # full offline test suite (deterministic)
-npm run test:live     # live-endpoint integration tests (hits the deployed URLs)
-python -m fii_dii build   # build dist/ (what Pages serves)
-python scripts/screenshot.py   # refresh docs/screenshot.png from the live site
+pip install -e ".[dev]"
+python -m pytest -q               # offline test suite (deterministic)
+
+fii-dii-scrape                    # real scrape (NSE may 404 from non-browser IPs — expected, falls back)
+fii-dii-chart                     # refresh the README chart
+fii-dii-build                     # build the site into dist/
+npx serve dist                    # preview at http://localhost:3000
 ```
 
-**Dependencies:** runtime `cheerio` (HTML parsing) only; tests use the built-in `node:test` runner — zero dev dependencies.
+## Configuration
 
-## Data pipeline
+Env vars only — never hardcoded. Names + purpose:
 
-1. **Fetch** — `scrape.py` calls NSE's `fiidii` JSON API first. On any failure (NSE blocks non-browser IPs) it falls back to scraping the Moneycontrol activity table.
-2. **Parse** — `parseNse` matches the `FII/FPI *` and `DII **` category rows; `parseMoneycontrolRow` reads the cash table, skipping the leading date column. `toNumber` normalizes `1,234.50`, `₹`, and accounting `(913.59)` → `-913.59`.
-3. **Validate** — `validatePayload` checks all six fields are finite and that `buy − sell ≈ net` (±1 cr rounding). `hasCompleteEquity` requires both FII and DII sides populated.
-4. **Write** — the accepted payload is written to `data/<date>.json` and `data/latest.json`.
-5. **Publish** — `chart.py` refreshes the README chart; the commit is pushed; `deploy.yml` rebuilds the static site to Pages.
+| Variable | Purpose |
+|---|---|
+| `TELEGRAM_BOT_TOKEN` | Telegram bot token for daily notify (optional) |
+| `TELEGRAM_CHAT_ID` | Target Telegram chat id (optional) |
+| `SITE` | Base URL for the screenshot tool (defaults to the live site) |
 
 ## Testing
 
-Run `npm test`. The suite (built-in `node:test`, no framework) covers:
-
-| File | What it checks |
-| --- | --- |
-| `scripts/lib/schema.test.py` | `toNumber` edge cases, `parseNse`/`parseMoneycontrolRow`, validation, `hasCompleteEquity`. |
-| `scripts/data.test.py` | Every committed `data/*.json` is schema-valid; reports non-zero coverage. |
-| `scripts/test_chart.py` | The README chart block is present and line-ending agnostic. |
-| `scripts/openapi.test.py` | `openapi.yaml` is 3.1, documents both endpoints, lists all servers, example is schema-valid. |
-| `tests/test_no_brand.py` | Brand guard — the project is strictly "FII/DII Activity API". |
-| `scripts/live.test.py` | (`LIVE=1`) every published mirror returns 200 + valid JSON; upstreams reachable. |
-
-CI (`ci.yml`) runs the offline suite, asserts the chart is not stale, and confirms the static site builds — on every push and PR.
-
-## Deploy
-
-GitHub Pages, built by `deploy.yml` on every push that touches `data/`, `README.md`, `openapi.yaml`, or the build script. There is **no external template and no custom domain** — `src/fii_dii/build_site.py` emits a self-contained `dist/` (landing page with an inline SVG chart, all data files, the OpenAPI spec). Pages serves it at the canonical `github.io` URL; jsDelivr/Statically/raw mirror the same committed files.
-
-## Local development
-
-```bash
-npm install
-python -m fii_dii scrape          # try a real scrape (NSE may 404 from non-browser IPs — expected)
-npm test                         # verify everything offline
-python -m fii_dii build      # build the site locally into dist/
-npx serve dist                   # preview at http://localhost:3000
-SITE=http://localhost:3000 python scripts/screenshot.py   # screenshot the local build
-```
+`python -m pytest -q`. The suite covers `toNumber`/parse edge cases, payload
+validation and `has_complete_equity`, every committed `data/*.json` being schema-valid,
+the README chart block being present, and `openapi.yaml` being a valid 3.1 spec that
+documents both endpoints and all servers. CI (`ci.yml`) runs the offline suite, asserts
+the chart is not stale, and confirms the static site builds — on every push and PR.
 
 ## Schedule
 
-Weekdays 13:00 UTC (~18:30 IST, after NSE close). Manually re-runnable via the **scrape** workflow (`workflow_dispatch`).
+Weekdays 13:00 UTC (`0 13 * * 1-5`, ~18:30 IST, after NSE close). Manually re-runnable
+via the **scrape** workflow (`workflow_dispatch`).
+
+## Part of the oriz family
+
+One of ~80 sites in the [oriz](https://blog.oriz.in) family — a solo-run fleet of
+finance tools, blogs, and utilities. This one is **hosted free on GitHub Pages +
+GitHub Actions** (no Cloudflare, no backend, no ongoing cost) — the scrape runs on
+free Actions minutes and the data is served as static files.
+
+## Contributing
+
+Issues and PRs welcome — see [CONTRIBUTING.md](./CONTRIBUTING.md) and
+[SECURITY.md](./SECURITY.md). Conventional commits — they **are** the changelog.
 
 ## License
 
-MIT — see [LICENSE](./LICENSE).
+MIT © Chirag Singhal — chirag@oriz.in
+
+## Status / roadmap
+
+Stable, running daily. Roadmap: derivatives (F&O) block once a keyless source exposes
+it, longer historical backfill.
+
+---
+
+**Disclaimer:** General information, not investment advice. Institutional-flow data is
+descriptive, not a trade signal — do your own research.
