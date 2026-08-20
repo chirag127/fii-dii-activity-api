@@ -178,12 +178,12 @@ the chart is not stale, and confirms the static site builds — on every push an
 Weekdays 13:00 UTC (`0 13 * * 1-5`, ~18:30 IST, after NSE close). Manually re-runnable
 via the **scrape** workflow (`workflow_dispatch`).
 
-## Part of the oriz family
+## Part of the broader fleet
 
-One of ~80 sites in the [oriz](https://blog.oriz.in) family — a solo-run fleet of
-finance tools, blogs, and utilities. This one is **hosted free on GitHub Pages +
-GitHub Actions** (no Cloudflare, no backend, no ongoing cost) — the scrape runs on
-free Actions minutes and the data is served as static files.
+One of ~80 solo-run sites in a family of finance tools, blogs, and utilities. This
+one is **hosted free on GitHub Pages + GitHub Actions** (no Cloudflare, no backend,
+no ongoing cost) — the scrape runs on free Actions minutes and the data is served
+as static files.
 
 ## Contributing
 
@@ -192,7 +192,7 @@ Issues and PRs welcome — see [CONTRIBUTING.md](./CONTRIBUTING.md) and
 
 ## License
 
-MIT © Chirag Singhal — chirag@oriz.in
+MIT © Chirag Singhal
 
 ## Status / roadmap
 
