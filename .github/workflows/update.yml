@@ -1,0 +1,72 @@
+name: Update Data
+
+on:
+  schedule:
+    - cron: '0 0 1 */3 *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force update'
+        required: false
+        default: 'false'
+
+concurrency:
+  group: update-fii-dii-activity-api
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm ci || npm install
+      - name: Run scraper
+        id: scraper
+        run: node scraper/index.cjs
+        continue-on-error: true
+      - name: Validate
+        id: validate
+        run: node scripts/validate.cjs
+        continue-on-error: true
+      - name: Generate artifacts
+        if: steps.scraper.outcome == 'success' && steps.validate.outcome == 'success'
+        run: |
+          node scripts/generate-individual.cjs
+          node scripts/generate-search-index.cjs
+          node scripts/generate-meta.cjs
+      - name: Check changes
+        id: check
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+      - name: Commit and push
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "data: update fii-dii-activity-api [$(date -u +%Y-%m-%d)]"
+          git push
+      - name: Create issue on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = \`Data update failed: \${new Date().toISOString()}\`;
+            const body = \`Scraper or validation failed. Last known good data retained.\n\nRun: \${context.runId}\`;
+            github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title, body });
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: update-artifacts-${{ github.run_id }}
+          path: |
+            scraper/fixtures/
+            logs/
+            diagnostics/
+          retention-days: 7
