@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>India States API — Oriz Free Public APIs</title>
+  <meta name="description" content="All 28 states and 8 union territories of India. Static JSON API, zero cost.">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --border: #334155;
+      --ok: #4ade80;
+      --warn: #fbbf24;
+    }
+    * { box-sizing: border-box; margin: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    header { margin-bottom: 2rem; }
+    h1 { font-size: 1.6rem; font-weight: 700; }
+    .eyebrow {
+      color: var(--accent);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+    .meta { color: var(--muted); font-size: 0.9rem; margin-top: 0.5rem; }
+    .badge {
+      display: inline-block;
+      padding: 0.15em 0.6em;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-right: 0.4em;
+    }
+    .badge-ok { background: rgba(74,222,128,0.15); color: var(--ok); }
+    .badge-warn { background: rgba(251,191,36,0.15); color: var(--warn); }
+    .badge-info { background: rgba(56,189,248,0.15); color: var(--accent); }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .card h2 { font-size: 1.1rem; margin-bottom: 0.75rem; }
+    .endpoint {
+      background: #0b1220;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    .endpoint code {
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      font-size: 0.85rem;
+    }
+    .method {
+      color: var(--accent);
+      font-weight: 700;
+      margin-right: 0.5rem;
+    }
+    .url { color: var(--text); }
+    .try-it {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .try-it input {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      color: var(--text);
+      font-size: 0.85rem;
+    }
+    .try-it button {
+      background: var(--accent);
+      color: #0f172a;
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .try-it button:hover { opacity: 0.9; }
+    pre {
+      background: #0b1220;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      overflow-x: auto;
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+    }
+    .status-bar {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--ok);
+    }
+    .search-box {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: var(--text);
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+    .results { display: grid; gap: 0.5rem; }
+    .result-row {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .result-row:hover { border-color: var(--accent); }
+    .result-name { font-weight: 600; }
+    .result-meta { color: var(--muted); font-size: 0.85rem; }
+    footer {
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="eyebrow">Oriz Free Public APIs</div>
+    <h1>India States API</h1>
+    <p class="meta">
+      <span class="badge badge-ok">Active</span>
+      <span class="badge badge-info">CC-BY-4.0</span>
+      <span class="badge badge-info">36 records</span>
+      All 28 states and 8 union territories · Static JSON · Zero cost
+    </p>
+  </header>
+
+  <div class="status-bar">
+    <div class="status-item"><span class="status-dot"></span> Healthy</div>
+    <div class="status-item">Records: 36</div>
+    <div class="status-item">Version: 1.0.0</div>
+    <div class="status-item">Updated: 2026-08-25</div>
+    <div class="status-item">Source: <a href="https://data.gov.in">data.gov.in</a></div>
+  </div>
+
+  <div class="card">
+    <h2>Try it</h2>
+    <div class="endpoint">
+      <code><span class="method">GET</span><span class="url">/api/v1/states.json</span></code>
+      <div class="try-it">
+        <input type="text" value="https://chirag127.github.io/india-states-api/api/v1/states.json" readonly>
+        <button onclick="copy(this)">Copy</button>
+      </div>
+    </div>
+    <div class="endpoint">
+      <code><span class="method">GET</span><span class="url">/api/v1/states/{id}.json</span></code>
+      <div class="try-it">
+        <input type="text" id="stateId" placeholder="IN-MH" value="IN-MH">
+        <button onclick="fetchState()">Fetch</button>
+      </div>
+      <pre id="stateResult">// Click Fetch to see result</pre>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Search</h2>
+    <input class="search-box" id="searchInput" placeholder="Search by name or capital..." oninput="search(this.value)">
+    <div class="results" id="searchResults"></div>
+  </div>
+
+  <div class="card">
+    <h2>Endpoints</h2>
+    <div class="endpoint">
+      <code><span class="method">GET</span><span class="url">/api/v1/states.json</span></code>
+      <p style="color:var(--muted);font-size:0.85rem;margin-top:0.4rem;">All 36 states and UTs</p>
+    </div>
+    <div class="endpoint">
+      <code><span class="method">GET</span><span class="url">/api/v1/states/{id}.json</span></code>
+      <p style="color:var(--muted);font-size:0.85rem;margin-top:0.4rem;">Single state by ISO code, e.g. <code>IN-MH</code></p>
+    </div>
+    <div class="endpoint">
+      <code><span class="method">GET</span><span class="url">/api/v1/search.json?q={query}</span></code>
+      <p style="color:var(--muted);font-size:0.85rem;margin-top:0.4rem;">Search by name or capital (client-side via search-index.json)</p>
+    </div>
+    <div class="endpoint">
+      <code><span class="method">GET</span><span class="url">/api/v1/meta.json</span></code>
+      <p style="color:var(--muted);font-size:0.85rem;margin-top:0.4rem;">Dataset metadata: freshness, record count, status</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Schema</h2>
+    <p style="color:var(--muted);font-size:0.85rem;margin-bottom:0.75rem;">JSON Schema validates every record. <a href="schemas/states.json">View schema</a></p>
+    <pre>{
+  "id": "IN-MH",
+  "name": "Maharashtra",
+  "capital": "Mumbai",
+  "status": "state",
+  "population": 112374333,
+  "area_km2": 307713,
+  "districts": 36,
+  "official_languages": ["Marathi"],
+  "region": "west"
+}</pre>
+  </div>
+
+  <div class="card">
+    <h2>OpenAPI</h2>
+    <p style="color:var(--muted);font-size:0.85rem;">Full OpenAPI 3.1.0 spec: <a href="openapi.yaml">openapi.yaml</a></p>
+  </div>
+
+  <footer>
+    <p>Data: <a href="https://data.gov.in">data.gov.in</a> / Census of India · License: CC-BY-4.0</p>
+    <p>Part of <a href="https://oriz.in/apis">Oriz Free Public APIs</a> · <a href="https://github.com/chirag127/india-states-api">GitHub</a></p>
+  </footer>
+
+  <script>
+    let states = [];
+    let searchIndex = null;
+
+    async function loadData() {
+      const res = await fetch('api/v1/states.json');
+      states = await res.json();
+      const idxRes = await fetch('api/v1/search-index.json');
+      searchIndex = await idxRes.json();
+    }
+
+    function copy(btn) {
+      const input = btn.previousElementSibling;
+      input.select();
+      navigator.clipboard.writeText(input.value);
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy', 1500);
+    }
+
+    async function fetchState() {
+      const id = document.getElementById('stateId').value.trim();
+      const pre = document.getElementById('stateResult');
+      try {
+        const res = await fetch(`api/v1/states/${id}.json`);
+        const data = await res.json();
+        pre.textContent = JSON.stringify(data, null, 2);
+      } catch (e) {
+        pre.textContent = '// Not found: ' + id;
+      }
+    }
+
+    function search(q) {
+      const results = document.getElementById('searchResults');
+      if (!q || q.length < 2) { results.innerHTML = ''; return; }
+      const term = q.toLowerCase();
+      const matched = new Set();
+
+      // Search by name prefix
+      for (const [prefix, ids] of Object.entries(searchIndex.byName)) {
+        if (prefix.startsWith(term)) ids.forEach(id => matched.add(id));
+      }
+      // Search by capital prefix
+      for (const [prefix, ids] of Object.entries(searchIndex.byCapital)) {
+        if (prefix.startsWith(term)) ids.forEach(id => matched.add(id));
+      }
+
+      const items = Array.from(matched).map(id => searchIndex.byId[id]).filter(Boolean);
+      results.innerHTML = items.map(s => `
+        <div class="result-row">
+          <div>
+            <div class="result-name">${s.name}</div>
+            <div class="result-meta">${s.capital} · ${s.status} · ${s.id}</div>
+          </div>
+          <code style="font-size:0.8rem;color:var(--muted)">${s.id}</code>
+        </div>
+      `).join('');
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
