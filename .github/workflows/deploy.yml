@@ -27,9 +27,9 @@ jobs:
           cp -r schemas _site/
           cp website/index.html _site/
           cp openapi.yaml _site/
-          cp README.md _site/
-          cp LICENSE _site/
-          cp SECURITY.md _site/ 2>/dev/null || true
+          cp README.md _site/ 2>/dev/null || true  # README.md
+          cp LICENSE _site/ 2>/dev/null || true  # LICENSE
+          cp SECURITY.md _site/ 2>/dev/null || true  # SECURITY.md
       - uses: actions/upload-pages-artifact@v3
         with: { path: _site }
       - uses: actions/deploy-pages@v4
