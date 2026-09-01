@@ -61,7 +61,7 @@ jobs:
             const title = \`Data update failed: \${new Date().toISOString()}\`;
             const body = \`Scraper or validation failed. Last known good data retained.\n\nRun: \${context.runId}\`;
             github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title, body });
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: update-artifacts-${{ github.run_id }}
