@@ -55,7 +55,7 @@ jobs:
           git push
       - name: Create issue on failure
         if: failure()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const title = \`Data update failed: \${new Date().toISOString()}\`;
