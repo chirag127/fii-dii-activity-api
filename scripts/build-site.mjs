@@ -143,7 +143,7 @@ const html = `<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FII/DII Activity — daily institutional flows, Oriz</title>
+<title>FII/DII Activity — daily institutional flows</title>
 <meta name="description" content="Daily FII and DII net buy/sell activity for Indian equities, ${series.length} sessions of history, served as a free static JSON API.">
 <meta name="theme-color" content="#0b1220">
 <style>
@@ -207,7 +207,7 @@ const html = `<!DOCTYPE html>
 </head>
 <body>
 <div class="wrap">
-  <div class="brand">oriz<span>.in</span><span class="tag">FII / DII activity</span></div>
+  <div class="brand">FII<span>/</span>DII<span class="tag">Activity API</span></div>
 
   <header class="hero">
     <h1>Who moved the Indian market <em>today</em>.</h1>
@@ -271,7 +271,7 @@ GET data/latest.json      # latest session only</pre>
         <a href="openapi.yaml">openapi.yaml</a>
         <a href="schemas/">schemas</a>
         <a href="https://github.com/chirag127/fii-dii-activity-api">source</a>
-        <a href="https://oriz.in">oriz.in</a>
+        <a href="https://github.com/chirag127/fii-dii-activity-api">github</a>
       </div>
     </div>
   </section>

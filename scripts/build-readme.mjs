@@ -122,7 +122,7 @@ ${table}
 | Host | URL | Role |
 | :--- | :--- | :--- |
 | GitHub Pages | https://chirag127.github.io/fii-dii-activity-api/ | canonical (domain-independent) |
-| Alias (optional) | https://gh.oriz.in/fii-dii-activity-api/ | works only while the oriz.in zone resolves |
+| Alias (optional) | https://gh.oriz.in/fii-dii-activity-api/ | alias host, depends on the custom domain |
 
 ## API
 

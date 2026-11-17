@@ -1,7 +1,7 @@
 name: Deploy to GitHub Pages
 
-# Fallback host: https://gh.oriz.in/fii-dii-activity-api/
-# Canonical host stays https://fii-dii.oriz.in (Cloudflare Pages).
+# Canonical host: https://chirag127.github.io/fii-dii-activity-api/
+# This project deploys to GitHub Pages only - no Cloudflare Pages target.
 
 on:
   push:

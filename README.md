@@ -14,7 +14,7 @@ and served as static JSON via GitHub Pages and `raw.githubusercontent.com`. A Py
 job runs after NSE close, validates the parse, commits it to the repo (git-as-DB), and
 GitHub Pages publishes a self-contained site + the raw JSON API.
 
-- **Live site:** https://fii-dii-activity-api.oriz.in
+- **Live site:** https://chirag127.github.io/fii-dii-activity-api/
 - **GH Pages (canonical API/landing):** https://chirag127.github.io/fii-dii-activity-api/
 - **Repo:** https://github.com/chirag127/fii-dii-activity-api
 
@@ -242,7 +242,7 @@ descriptive, not a trade signal — do your own research.
 | Host | URL | Role |
 | :--- | :--- | :--- |
 | GitHub Pages | https://chirag127.github.io/fii-dii-activity-api/ | canonical (domain-independent) |
-| Misconfigured custom domain | https://gh.oriz.in/fii-dii-activity-api/ | alias, only when the oriz.in zone resolves |
+| Alias (optional) | https://gh.oriz.in/fii-dii-activity-api/ | alias host, depends on the custom domain |
 
 ## API
 
