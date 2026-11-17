@@ -32,6 +32,9 @@ jobs:
           node-version: '22'
       - name: Build site from data/
         run: node scripts/build-site.mjs
+        env:
+          PUBLIC_GA4_ID: ${{ vars.PUBLIC_GA4_ID }}
+          PUBLIC_GA_HOSTS: ${{ vars.PUBLIC_GA_HOSTS }}
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

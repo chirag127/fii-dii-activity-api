@@ -10,6 +10,7 @@
 import { readFileSync, readdirSync, mkdirSync, writeFileSync, cpSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { analyticsSnippet } from './lib/analytics.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dataDir = join(root, 'data');
@@ -204,6 +205,7 @@ const html = `<!DOCTYPE html>
   footer{border-top:1px solid var(--line);margin-top:44px;padding:20px 0 44px;color:var(--muted);font-size:12.5px}
   @media (prefers-reduced-motion:no-preference){.kpi,.card{transition:border-color .2s}.kpi:hover,.card:hover{border-color:#2c3f5e}}
 </style>
+${analyticsSnippet()}
 </head>
 <body>
 <div class="wrap">
