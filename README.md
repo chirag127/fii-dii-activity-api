@@ -203,3 +203,54 @@ it, longer historical backfill.
 
 **Disclaimer:** General information, not investment advice. Institutional-flow data is
 descriptive, not a trade signal — do your own research.
+
+<!-- DATA:BEGIN -->
+## Latest reading
+
+**2026-11-16** — FII +4,865 cr · DII −3,519 cr · combined +1,346 cr
+
+| Metric | Value |
+| :--- | ---: |
+| Sessions archived | 83 |
+| FII cumulative (30d) | +46,941 cr |
+| DII cumulative (30d) | +7,400 cr |
+| Latest session | 2026-11-16 |
+
+![FII vs DII daily net flows](docs/assets/daily-flows.svg)
+
+![Cumulative institutional flow](docs/assets/cumulative-flows.svg)
+
+## Recent sessions
+
+| Date | FII net (₹ cr) | DII net (₹ cr) | Combined |
+| :--- | ---: | ---: | ---: |
+| 2026-11-16 | +4,865 | −3,519 | +1,346 |
+| 2026-11-13 | +5,737 | −2,254 | +3,483 |
+| 2026-11-12 | +7,831 | −6,331 | +1,499 |
+| 2026-11-11 | +12,563 | −8,435 | +4,129 |
+| 2026-11-09 | +7,212 | −7,173 | +40 |
+| 2026-11-08 | −0 | −700 | −701 |
+| 2026-11-06 | +13,750 | −5,969 | +7,781 |
+| 2026-11-05 | +14,975 | −10,445 | +4,530 |
+| 2026-11-04 | +7,284 | −3,712 | +3,572 |
+| 2026-11-03 | +6,837 | −3,679 | +3,158 |
+| 2026-11-02 | +3,115 | −392 | +2,722 |
+| 2026-10-30 | +3,599 | −818 | +2,781 |
+
+## Live URLs
+
+| Host | URL | Role |
+| :--- | :--- | :--- |
+| GitHub Pages | https://chirag127.github.io/fii-dii-activity-api/ | canonical (domain-independent) |
+| Misconfigured custom domain | https://gh.oriz.in/fii-dii-activity-api/ | alias, only when the oriz.in zone resolves |
+
+## API
+
+| Endpoint | Payload |
+| :--- | :--- |
+| `api/v1/data.json` | every session |
+| `api/v1/index.json` | date index |
+| `data/latest.json` | latest session only |
+| `data/<YYYY-MM-DD>.json` | one session |
+
+<!-- DATA:END -->
