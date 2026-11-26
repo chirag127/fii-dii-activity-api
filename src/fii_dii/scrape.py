@@ -15,7 +15,7 @@ from __future__ import annotations
 import json
 
 import httpx
-from selectolax.parser import HTMLParser
+from selectolax.lexbor import LexborHTMLParser as HTMLParser
 
 from .schema import build_payload, parse_groww, parse_moneycontrol_row, parse_nse, zero_block
 from .util import fetch_text, log
@@ -41,13 +41,17 @@ def try_nse(today: str) -> dict:
 
 def try_groww(today: str) -> dict:
     """Groww server-rendered FII/DII cash data (newest row = today's session)."""
+    latest = try_groww_payloads()[0]
+    return build_payload(date=latest["date"], source="groww", equity=latest["equity"], derivative=zero_block())
+
+
+def try_groww_payloads() -> list[dict]:
+    """Every dated equity row Groww serves, newest first (used by backfill)."""
     html = fetch_text(GROWW_URL)
     node = HTMLParser(html).css_first("#__NEXT_DATA__")
     if node is None:
         raise ValueError("groww: __NEXT_DATA__ script not found")
-    records = parse_groww(json.loads(node.text()))
-    latest = records[0]
-    return build_payload(date=latest["date"], source="groww", equity=latest["equity"], derivative=zero_block())
+    return parse_groww(json.loads(node.text()))
 
 
 def try_moneycontrol(today: str) -> dict:

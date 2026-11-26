@@ -14,7 +14,7 @@ and served as static JSON via GitHub Pages and `raw.githubusercontent.com`. A Py
 job runs after NSE close, validates the parse, commits it to the repo (git-as-DB), and
 GitHub Pages publishes a self-contained site + the raw JSON API.
 
-- **Live site:** https://fii-dii-activity-api.oriz.in
+- **Live site:** https://chirag127.github.io/fii-dii-activity-api/
 - **GH Pages (canonical API/landing):** https://chirag127.github.io/fii-dii-activity-api/
 - **Repo:** https://github.com/chirag127/fii-dii-activity-api
 
@@ -53,10 +53,10 @@ flowchart LR
 ```mermaid
 xychart-beta
     title "FII net (line 1) vs DII net (line 2) — INR crore"
-    x-axis ["07-31", "08-03", "08-04", "08-06", "08-07", "08-10", "08-11", "08-12", "08-13", "08-14", "08-17", "08-18", "08-19", "08-20", "08-21", "08-25", "08-26", "08-27", "08-28", "08-31"]
-    y-axis "Net (INR cr)" -7986 --> 6426
-    line [0, 0, 2446.47, -17.86, 480.24, 1974.76, 258.55, -1002.5, -510.69, 508.12, -2535.1, 1651.53, 407.99, -583.36, -542.71, 1593.53, 502.63, -298.26, -5039.8, -7985.88]
-    line [0, 0, -936.14, 4013.6, 235.56, -1290.29, 24.77, 5841.66, 4353.09, 356.4, 5101.46, 2579.31, 3973.72, 3537.71, 2124.14, 230.26, 6425.16, 4977.17, 5183.93, 4588.88]
+    x-axis ["10-28", "10-29", "10-30", "11-02", "11-03", "11-04", "11-05", "11-06", "11-08", "11-09", "11-11", "11-12", "11-13", "11-16", "11-17", "11-18", "11-19", "11-20", "11-23", "11-25"]
+    y-axis "Net (INR cr)" -10445 --> 14975
+    line [871.83, -943.6, 3598.54, 3114.68, 6836.81, 7284.03, 14974.68, 13749.82, -0.25, 7212.22, 12563.33, 7830.6, 5736.55, 4864.68, 4195.38, 5866.78, 7411.41, 10308.42, 5672.99, 4479.08]
+    line [643.35, 1924.41, -817.51, -392.2, -3678.85, -3712.23, -10444.54, -5968.7, -700.31, -7172.53, -8434.53, -6331.17, -2253.58, -3519.05, 196.93, -3159.9, -1356.57, -4859.8, -2760.12, 4018.72]
 ```
 
 <sub>FII = first line, DII = second line. Auto-generated from `data/` by `python -m fii_dii.chart` on each scrape. Last 20 session(s).</sub>
@@ -203,3 +203,54 @@ it, longer historical backfill.
 
 **Disclaimer:** General information, not investment advice. Institutional-flow data is
 descriptive, not a trade signal — do your own research.
+
+<!-- DATA:BEGIN -->
+## Latest reading
+
+**2026-11-25** — FII +4,479 cr · DII +4,019 cr · combined +8,498 cr
+
+| Metric | Value |
+| :--- | ---: |
+| Sessions archived | 89 |
+| FII cumulative (30d) | +95,863 cr |
+| DII cumulative (30d) | −19,992 cr |
+| Latest session | 2026-11-25 |
+
+![FII vs DII daily net flows](docs/assets/daily-flows.svg)
+
+![Cumulative institutional flow](docs/assets/cumulative-flows.svg)
+
+## Recent sessions
+
+| Date | FII net (₹ cr) | DII net (₹ cr) | Combined |
+| :--- | ---: | ---: | ---: |
+| 2026-11-25 | +4,479 | +4,019 | +8,498 |
+| 2026-11-23 | +5,673 | −2,760 | +2,913 |
+| 2026-11-20 | +10,308 | −4,860 | +5,449 |
+| 2026-11-19 | +7,411 | −1,357 | +6,055 |
+| 2026-11-18 | +5,867 | −3,160 | +2,707 |
+| 2026-11-17 | +4,195 | +197 | +4,392 |
+| 2026-11-16 | +4,865 | −3,519 | +1,346 |
+| 2026-11-13 | +5,737 | −2,254 | +3,483 |
+| 2026-11-12 | +7,831 | −6,331 | +1,499 |
+| 2026-11-11 | +12,563 | −8,435 | +4,129 |
+| 2026-11-09 | +7,212 | −7,173 | +40 |
+| 2026-11-08 | −0 | −700 | −701 |
+
+## Live URLs
+
+| Host | URL | Role |
+| :--- | :--- | :--- |
+| GitHub Pages | https://chirag127.github.io/fii-dii-activity-api/ | canonical (domain-independent) |
+| Alias (optional) | https://gh.oriz.in/fii-dii-activity-api/ | alias host, depends on the custom domain |
+
+## API
+
+| Endpoint | Payload |
+| :--- | :--- |
+| `api/v1/data.json` | every session |
+| `api/v1/index.json` | date index |
+| `data/latest.json` | latest session only |
+| `data/<YYYY-MM-DD>.json` | one session |
+
+<!-- DATA:END -->

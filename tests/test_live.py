@@ -53,7 +53,7 @@ def test_specific_dated_file_valid():
 
 
 def test_upstream_groww_reachable():
-    from selectolax.parser import HTMLParser
+    from selectolax.lexbor import LexborHTMLParser as HTMLParser
 
     r = httpx.get("https://groww.in/fii-dii-data", headers={"User-Agent": UA}, timeout=25, follow_redirects=True)
     if r.status_code != 200:
