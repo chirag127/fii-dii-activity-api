@@ -17,6 +17,7 @@ fii-dii-scrape = "fii_dii.__main__:main"
 fii-dii-chart = "fii_dii.chart:main"
 fii-dii-manifest = "fii_dii.manifest:main"
 fii-dii-build = "fii_dii.build_site:main"
+fii-dii-backfill = "fii_dii.backfill:main"
 
 [build-system]
 requires = ["setuptools>=68"]
