@@ -7,7 +7,7 @@ The only permitted occurrence is the GitHub-Pages custom domain <repo>.oriz.in.
 import re
 from pathlib import Path
 
-_SKIP_DIRS = {"node_modules", ".git", "dist", ".wrangler", "__pycache__", ".pytest_cache", ".egg-info"}
+_SKIP_DIRS = {"node_modules", ".git", "dist", ".wrangler", "__pycache__", ".pytest_cache", ".egg-info", ".venv", "_site", "docs"}
 _CHECK_EXT = re.compile(r"\.(md|py|mjs|js|json|yaml|yml|svg|css|html|txt|toml)$", re.I)
 
 # These files must reference the banned word to test for it — skip them.

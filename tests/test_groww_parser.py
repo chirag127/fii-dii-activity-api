@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 import pytest
-from selectolax.parser import HTMLParser
+from selectolax.lexbor import LexborHTMLParser as HTMLParser
 
 from fii_dii.schema import BLOCK_FIELDS, has_complete_equity, parse_groww, validate_payload
 from fii_dii.__main__ import build_payload
