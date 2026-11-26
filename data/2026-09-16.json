@@ -1,0 +1,20 @@
+{
+  "date": "2026-09-16",
+  "source": "groww",
+  "equity": {
+    "fii_buy": 12959.04,
+    "fii_sell": 14991.65,
+    "fii_net": -2032.61,
+    "dii_buy": 15279.59,
+    "dii_sell": 11371.36,
+    "dii_net": 3908.23
+  },
+  "derivative": {
+    "fii_buy": 0.0,
+    "fii_sell": 0.0,
+    "fii_net": 0.0,
+    "dii_buy": 0.0,
+    "dii_sell": 0.0,
+    "dii_net": 0.0
+  }
+}
