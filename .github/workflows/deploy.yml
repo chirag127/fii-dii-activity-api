@@ -1,5 +1,8 @@
 name: Deploy to GitHub Pages
 
+# Canonical host: https://chirag127.github.io/fii-dii-activity-api/
+# This project deploys to GitHub Pages only - no Cloudflare Pages target.
+
 on:
   push:
     branches: [main]
@@ -17,24 +20,24 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
           fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build site from data/
+        run: node scripts/build-site.mjs
+        env:
+          PUBLIC_GA4_ID: ${{ vars.PUBLIC_GA4_ID }}
+          PUBLIC_GA_HOSTS: ${{ vars.PUBLIC_GA_HOSTS }}
       - uses: actions/configure-pages@v5
-      - name: Build
-        run: |
-          mkdir -p _site
-          cp -r api _site/
-          cp -r schemas _site/
-          cp website/index.html _site/
-          cp openapi.yaml _site/
-          cp README.md _site/ 2>/dev/null || true  # README.md
-          cp LICENSE _site/ 2>/dev/null || true  # LICENSE
-          cp SECURITY.md _site/ 2>/dev/null || true  # SECURITY.md
       - uses: actions/upload-pages-artifact@v3
-        with: { path: _site }
-      - uses: actions/deploy-pages@v4
-        id: deployment
-      - run: echo "Deployed to ${{ steps.deployment.outputs.page_url }}"
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
